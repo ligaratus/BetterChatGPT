@@ -28,7 +28,7 @@ const MenuOptions = () => {
         <AboutMenu />
         {/* <ImportExportChat /> */}
         <Api />
-        {/* <SettingsMenu /> */}
+        <SettingsMenu />
         {/* <Me /> */}
       </div>
     </>
