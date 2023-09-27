@@ -60,9 +60,9 @@ const ChatContent = () => {
             ref={saveRef}
           >
             {advancedMode && <ChatTitle />}
-            {!generating && advancedMode && messages?.length === 0 && (
+            {/* {!generating && advancedMode && messages?.length === 0 && (
               <NewMessageButton messageIndex={-1} />
-            )}
+            )} */}
             {messages?.map((message, index) => (
               (advancedMode || index !== 0 || message.role !== 'system') && (
                 <React.Fragment key={index}>
