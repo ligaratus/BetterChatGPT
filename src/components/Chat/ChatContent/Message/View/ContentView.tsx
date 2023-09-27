@@ -143,10 +143,10 @@ const ContentView = memo(
                 messageIndex === lastMessageIndex && (
                   <RefreshButton onClick={handleRefresh} />
                 )}
-              {messageIndex !== 0 && <UpButton onClick={handleMoveUp} />}
+              {/* {messageIndex !== 0 && <UpButton onClick={handleMoveUp} />}
               {messageIndex !== lastMessageIndex && (
                 <DownButton onClick={handleMoveDown} />
-              )}
+              )} */}
 
               <MarkdownModeButton />
               <CopyButton onClick={handleCopy} />
