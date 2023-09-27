@@ -12,6 +12,8 @@ import useSubmit from '@hooks/useSubmit';
 import DownloadChat from './DownloadChat';
 import CloneChat from './CloneChat';
 import ShareGPT from '@components/ShareGPT';
+import Character from './Character';
+import { CharacterInterface } from '@type/character';
 
 const ChatContent = () => {
   const inputRole = useStore((state) => state.inputRole);
@@ -37,6 +39,9 @@ const ChatContent = () => {
   const hideSideMenu = useStore((state) => state.hideSideMenu);
 
   const saveRef = useRef<HTMLDivElement>(null);
+  const character = useStore((state) =>
+    state.chats && state.chats[state.currentChatIndex].character
+  );
 
   // clear error at the start of generating new messages
   useEffect(() => {
@@ -59,7 +64,13 @@ const ChatContent = () => {
             className='flex flex-col items-center text-sm dark:bg-gray-800 w-full'
             ref={saveRef}
           >
-            {advancedMode && <ChatTitle />}
+            {/* {advancedMode && <ChatTitle />} */}
+            <ChatTitle />
+            <Character
+              role={'system'}
+              character={character}
+            />
+            
             {/* {!generating && advancedMode && messages?.length === 0 && (
               <NewMessageButton messageIndex={-1} />
             )} */}

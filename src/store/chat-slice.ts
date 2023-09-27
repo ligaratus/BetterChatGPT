@@ -1,3 +1,4 @@
+import { CharacterInterface } from '@type/character';
 import { StoreSlice } from './store';
 import { ChatInterface, FolderCollection, MessageInterface } from '@type/chat';
 

@@ -61,6 +61,7 @@ const useSubmit = () => {
       role: 'assistant',
       content: '',
     });
+    const character = updatedChats[currentChatIndex].character;
 
     setChats(updatedChats);
     setGenerating(true);
@@ -71,7 +72,10 @@ const useSubmit = () => {
         throw new Error('No messages submitted!');
 
       const messages = limitMessageTokens(
-        chats[currentChatIndex].messages,
+        [{
+          role: 'system',
+          content: character.prompt,
+        }, ...chats[currentChatIndex].messages],
         chats[currentChatIndex].config.max_tokens,
         chats[currentChatIndex].config.model
       );

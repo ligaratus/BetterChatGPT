@@ -1,3 +1,4 @@
+import { CharacterInterface } from './character';
 import { Prompt } from './prompt';
 import { Theme } from './theme';
 
@@ -16,6 +17,7 @@ export interface ChatInterface {
   messages: MessageInterface[];
   config: ConfigInterface;
   titleSet: boolean;
+  character: CharacterInterface;
 }
 
 export interface ConfigInterface {
