@@ -49,7 +49,7 @@ const SettingsMenu = () => {
               {/* <AutoTitleToggle /> */}
               {/* <EnterToSubmitToggle /> */}
               {/* <InlineLatexToggle /> */}
-              <AdvancedModeToggle />
+              {/* <AdvancedModeToggle /> */}
               {/* <TotalTokenCostToggle /> */}
             </div>
             <ClearConversation />
