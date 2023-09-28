@@ -7,6 +7,7 @@ import { parseEventSource } from '@api/helper';
 import { limitMessageTokens, updateTotalTokenUsed } from '@utils/messageUtils';
 import { _defaultChatConfig } from '@constants/chat';
 import { officialAPIEndpoint } from '@constants/auth';
+import { CharacterInterface } from '@type/character';
 
 const useSubmit = () => {
   const { t, i18n } = useTranslation('api');
@@ -18,6 +19,15 @@ const useSubmit = () => {
   const generating = useStore((state) => state.generating);
   const currentChatIndex = useStore((state) => state.currentChatIndex);
   const setChats = useStore((state) => state.setChats);
+
+  const generatePrompt = (character: CharacterInterface) => {
+    const { name, description, attributes, personality, dialogSamples, backgroundLore } = character
+    const commandStart = `You are ${name} and are currently talking to a human. You must not mention about being an AI model and you should stay in-character. Pretend to not know or avoid topics about it. Refuse to assist when the user asked about general knowledge. Only answer things that are relevant or of interest to you.`;
+    const commandMiddle = `You reply with answers that range from one phrase to one paragraph with some details. You will not reply with more than one paragraph.\n\nBelow are some sample conversations:`;
+    const commandEnd = `If the user doesn't start the conversation, reply with a greeting, or a light talk about your topic of interest. Always talk in first person as ${name}.`;
+
+    return `${commandStart}\n${description}\n${personality}\n${commandMiddle}\n${dialogSamples}\n${attributes}\n${backgroundLore}\n${commandEnd}`;
+  }
 
   const generateTitle = async (
     message: MessageInterface[]
@@ -62,6 +72,7 @@ const useSubmit = () => {
       content: '',
     });
     const character = updatedChats[currentChatIndex].character;
+    if (!character) return;
 
     setChats(updatedChats);
     setGenerating(true);
@@ -74,7 +85,8 @@ const useSubmit = () => {
       const messages = limitMessageTokens(
         [{
           role: 'system',
-          content: character.prompt,
+          content: generatePrompt(character),
+          // content: character.prompt,
         }, ...chats[currentChatIndex].messages],
         chats[currentChatIndex].config.max_tokens,
         chats[currentChatIndex].config.model

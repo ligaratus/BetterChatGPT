@@ -47,6 +47,56 @@ export const getChatCompletion = async (
   return data;
 };
 
+export const getChatCompletionFunctionCall = async (
+  endpoint: string,
+  messages: MessageInterface[],
+  config: ConfigInterface,
+  functions: any[],
+  functionToCall: string,
+  apiKey?: string,
+  customHeaders?: Record<string, string>,
+) => {
+  const headers: HeadersInit = {
+    'Content-Type': 'application/json',
+    ...customHeaders,
+  };
+  if (apiKey) headers.Authorization = `Bearer ${apiKey}`;
+
+  if (isAzureEndpoint(endpoint) && apiKey) {
+    headers['api-key'] = apiKey;
+
+    const model = config.model === 'gpt-3.5-turbo' ? 'gpt-35-turbo' : config.model === 'gpt-3.5-turbo-16k' ? 'gpt-35-turbo-16k' : config.model;
+
+    const apiVersion = '2023-03-15-preview';
+
+    const path = `openai/deployments/${model}/chat/completions?api-version=${apiVersion}`;
+
+    if (!endpoint.endsWith(path)) {
+      if (!endpoint.endsWith('/')) {
+        endpoint += '/';
+      }
+      endpoint += path;
+    }
+  }
+
+  const response = await fetch(endpoint, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({
+      messages,
+      ...config,
+      max_tokens: undefined,
+      functions,
+      function_call: {"name": functionToCall }
+    }),
+  });
+  
+  if (!response.ok) throw new Error(await response.text());
+
+  const data = await response.json();
+  return data;
+};
+
 export const getChatCompletionStream = async (
   endpoint: string,
   messages: MessageInterface[],

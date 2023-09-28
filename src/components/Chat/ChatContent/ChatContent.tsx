@@ -66,10 +66,11 @@ const ChatContent = () => {
           >
             {/* {advancedMode && <ChatTitle />} */}
             <ChatTitle />
-            <Character
-              role={'system'}
-              character={character}
-            />
+            {character && 
+              <Character
+                role={'system'}
+                character={character}
+              />}
             
             {/* {!generating && advancedMode && messages?.length === 0 && (
               <NewMessageButton messageIndex={-1} />
@@ -88,12 +89,12 @@ const ChatContent = () => {
             ))}
           </div>
 
-          <Message
+          {character && character.isInitialised && <Message
             role={inputRole}
             content=''
             messageIndex={stickyIndex}
             sticky
-          />
+          />}
           {error !== '' && (
             <div className='relative py-2 px-3 w-3/5 mt-3 max-md:w-11/12 border rounded-md border-red-500 bg-red-500/10'>
               <div className='text-gray-600 dark:text-gray-100 text-sm whitespace-pre-wrap'>
@@ -116,13 +117,13 @@ const ChatContent = () => {
                 : 'md:max-w-3xl lg:max-w-3xl xl:max-w-4xl'
             }`}
           >
-            {useStore.getState().generating || (
+            {messages.length > 0 && (useStore.getState().generating || (
               <div className='md:w-[calc(100%-50px)] flex gap-4 flex-wrap justify-center'>
                 <DownloadChat saveRef={saveRef} />
                 {/* <ShareGPT /> */}
                 <CloneChat />
               </div>
-            )}
+            ))}
           </div>
           <div className='w-full h-36'></div>
         </div>

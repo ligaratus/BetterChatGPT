@@ -1,4 +1,5 @@
 
+export type CharacterProfile = 'description' | 'attributes' | 'personality' | 'dialogSamples' | 'backgroundLore';
 export type DialogRole = 'user' | 'character';
 
 export interface DialogMessage {
@@ -13,9 +14,11 @@ export interface DialogInterface {
 export interface CharacterInterface {
     id: string;
     name: string;
-    prompt: string;
+    description: string;
     attributes: string;
     personality: string;
-    dialogSamples: DialogInterface[];
+    // dialogSamples: DialogInterface[];
+    dialogSamples: string;
     backgroundLore: string;
+    isInitialised: boolean
 }
