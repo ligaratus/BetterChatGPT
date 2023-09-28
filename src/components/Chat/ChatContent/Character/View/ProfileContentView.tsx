@@ -14,13 +14,10 @@ import React, {
   import remarkGfm from 'remark-gfm';
   import useStore from '@store/store';
   
-  import TickIcon from '@icon/TickIcon';
   import EditIcon from '@icon/EditIcon';
   
   import useSubmit from '@hooks/useSubmit';
-  
-  import { ChatInterface } from '@type/chat';
-  
+    
   import { codeLanguageSubset } from '@constants/chat';
 import CodeBlock from '../../Message/CodeBlock';
     
