@@ -29,14 +29,14 @@ const Character = React.memo(
     const setChats = useStore((state) => state.setChats);
     const currentChatIndex = useStore((state) => state.currentChatIndex);
 
-    const handleGenerate = async () => {
+    const handleGenerate = async (useBestModel: boolean) => {
         if (generating) return;
         if (character.name.length == 0 || character.description.length == 0) {
             setError('Please fill in the name and description first.');
             return;
         }
         
-        await generateCharacterProfile();
+        await generateCharacterProfile(false);
         setTitle();
     }
 
@@ -127,10 +127,18 @@ const Character = React.memo(
             {!character.isInitialised && <div className='w-100 flex items-center justify-center mt-5'>
                 <button
                 className={`btn relative mr-2 mt-3 ${generating ? 'cursor-not-allowed opacity-40 btn-gray' : 'btn-primary'}`}
-                onClick={handleGenerate}
+                onClick={() => handleGenerate(false)}
                 >
                     <div className='flex items-center justify-center gap-2'>
                         {t('generate')}
+                    </div>
+                </button>
+                <button
+                className={`btn relative mr-2 mt-3 ${generating ? 'cursor-not-allowed opacity-40 btn-gray' : 'btn-primary'}`}
+                onClick={() => handleGenerate(true)}
+                >
+                    <div className='flex items-center justify-center gap-2'>
+                        {t('generate')} (GPT4)
                     </div>
                 </button>
             </div>}

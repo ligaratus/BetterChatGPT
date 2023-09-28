@@ -256,7 +256,7 @@ const useCharacterGeneration = () => {
     return cleanedStr;
   }
     
-  const generateCharacterProfile = async () => {
+  const generateCharacterProfile = async (useBestModel: boolean) => {
     const chats = useStore.getState().chats;
     if (generating || !chats) return;
 
@@ -267,7 +267,7 @@ const useCharacterGeneration = () => {
     
     let data;
     let chatConfig = _defaultChatConfig
-    // chatConfig.model = bestModel
+    if (useBestModel) chatConfig.model = bestModel
     const content = `${character.name}\n\n${character.description}`
     let characterData;
     
