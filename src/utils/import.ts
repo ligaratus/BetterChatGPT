@@ -11,6 +11,7 @@ import {
   defaultModel,
   modelOptions,
   _defaultChatConfig,
+  emptyCharacter,
 } from '@constants/chat';
 import { ExportV1, OpenAIChat } from '@type/export';
 
@@ -123,6 +124,7 @@ export const convertOpenAIToBetterChatGPTFormat = (
     messages,
     config: _defaultChatConfig,
     titleSet: true,
+    character: emptyCharacter
   };
 };
 

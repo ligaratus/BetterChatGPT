@@ -239,7 +239,7 @@ const dummyCharacter: CharacterInterface = {
   isInitialised: true
 }
 
-const emptyCharacter: CharacterInterface = {
+export const emptyCharacter: CharacterInterface = {
   id: "",
   name: '',
   description: '',
