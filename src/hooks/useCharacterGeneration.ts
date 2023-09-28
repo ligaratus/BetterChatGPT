@@ -8,6 +8,7 @@ import { limitMessageTokens, updateTotalTokenUsed } from '@utils/messageUtils';
 import { _defaultChatConfig, bestModel } from '@constants/chat';
 import { officialAPIEndpoint } from '@constants/auth';
 import { functions } from 'lodash';
+import { CharacterProfile } from '@type/character';
 
 const useCharacterGeneration = () => {
   const { t, i18n } = useTranslation('api');
@@ -256,7 +257,7 @@ const useCharacterGeneration = () => {
     return cleanedStr;
   }
     
-  const generateCharacterProfile = async (useBestModel: boolean) => {
+  const generateCharacterProfiles = async (useBestModel: boolean) => {
     const chats = useStore.getState().chats;
     if (generating || !chats) return;
 
@@ -296,7 +297,7 @@ const useCharacterGeneration = () => {
                     },
                     "dialogue_samples": {
                       "type": "string",
-                      "description": "This segment offers snippets of dialogues involving the character, whether with friends, foes, or neutral parties. These samples serve to illustrate how the character's psychological traits manifest in social situations, showing instead of just telling. It should be in this format: \"Human: Hello, how are you?\nCharacter: I'm fine. How about you?\". Give at least 3 expressive samples, separated by double line breaks."
+                      "description": "This segment offers snippets of dialogues involving the character, whether with friends, foes, or neutral parties. These samples serve to illustrate how the character's psychological traits manifest in social situations, showing instead of just telling. It should be in this format: \"Human: Hello, how are you?\nCharacter: I'm fine. How about you? How about you mind your business?\". Give at least 5 samples with various topics, separated by line breaks."
                     },
                     "background_lore": {
                       "type": "string",
@@ -332,7 +333,126 @@ const useCharacterGeneration = () => {
     return data.choices[0].message.function_call.arguments
   }
 
-  return { generateCharacterProfile, error };
+  const generateCharacterProfile = async (profile: CharacterProfile) => {
+    const chats = useStore.getState().chats;
+    if (generating || !chats) return;
+
+    const character = chats[currentChatIndex].character;
+    if (!character) return;
+    
+    setGenerating(true);
+    
+    let data;
+    let chatConfig = _defaultChatConfig
+    chatConfig.model = bestModel
+    const content = `${character.name}\n\n${character.description}`
+    console.log(content, "<<")
+    let profileData;
+    let functionToCall = "";
+    switch (profile) {
+      case 'description':
+        functionToCall = 'generate_character_description'
+        break;
+      case 'attributes':
+        functionToCall = 'generate_basic_attributes'
+        break;
+      case 'personality':
+        functionToCall = 'generate_personality_traits'
+        break;
+      case 'dialogSamples':
+        functionToCall = 'generate_dialogue_samples'
+        break;
+      case 'backgroundLore':
+        functionToCall = 'generate_background_lore'
+        break;
+      default:
+        break;
+    }
+    
+    try {
+      data = await getChatCompletionFunctionCall(
+        useStore.getState().apiEndpoint,
+        [{
+          role: 'system',
+          content: content
+        }],
+        chatConfig,
+        [
+          {
+            "name": "generate_basic_attributes",
+            "description": "Based on the given prompt, generate a character profile into the given format",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "answer": {
+                      "type": "string",
+                      "description": "This section includes immutable or quasi-immutable traits such as birthdate, height, and eye color, as well as more dynamic features like favorite foods or hobbies. These aspects serve as foundational elements that are unlikely to change significantly over time.",
+                    },
+                },
+                "required": ["answer"],
+              },
+          },
+          {
+            "name": "generate_personality_traits",
+            "description": "Based on the given prompt, generate a character profile into the given format",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "answer": {
+                      "type": "string",
+                      "description": "This section delves into the character's inner workings, covering temperament, how they typically interact with others, their core beliefs, and even speech patterns. This offers a more comprehensive understanding of who the character is as an individual. The first paragraph describe her inner profile, while the second paragraph describes the character's communication style. Separate them with double line breaks"
+                    },
+                },
+                "required": ["answer"],
+              },
+          },
+          {
+            "name": "generate_dialogue_samples",
+            "description": "Based on the given prompt, generate a character profile into the given format",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "answer": {
+                      "type": "string",
+                      "description": "This segment offers snippets of dialogues involving the character, whether with friends, foes, or neutral parties. These samples serve to illustrate how the character's psychological traits manifest in social situations, showing instead of just telling. It should be in this format: \"Human: Hello, how are you?\nCharacter: I'm fine. How about you? How about you mind your business?\". Give at least 5 samples with various topics, separated by line breaks."
+                    },
+                },
+                "required": ["answer"],
+              },
+          },
+          {
+            "name": "generate_background_lore",
+            "description": "Based on the given prompt, generate a character profile into the given format",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "answer": {
+                      "type": "string",
+                      "description": "This section is for any additional narrative or background information that enriches the character's identity. It can include details on their upbringing, important life events, or broader societal factors affecting them, thus providing context and depth. Provide at least 5 details, separated by double line breaks."
+                    },
+                },
+                "required": ["answer"],
+              },
+          },
+        ],
+        functionToCall,
+        apiKey
+      );
+
+      const profileDataJson = JSON.parse(data.choices[0].message.function_call.arguments)
+      profileData = profileDataJson.answer
+      console.log(profileDataJson, "<<", functionToCall)
+    } catch (error: unknown) {
+      setGenerating(false);
+      throw new Error(`Error generating character profile!\n${(error as Error).message}`);
+    }
+
+    setGenerating(false);
+    
+    return profileData
+  }
+
+  return { generateCharacterProfiles, generateCharacterProfile, error };
 };
 
 export default useCharacterGeneration;

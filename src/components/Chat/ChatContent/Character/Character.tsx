@@ -24,7 +24,7 @@ const Character = React.memo(
     const [error, setError] = useState<string>('')
 
     const { t } = useTranslation();
-    const { generateCharacterProfile } = useCharacterGeneration();
+    const { generateCharacterProfiles } = useCharacterGeneration();
     const generating = useStore.getState().generating;
     const setChats = useStore((state) => state.setChats);
     const currentChatIndex = useStore((state) => state.currentChatIndex);
@@ -36,7 +36,7 @@ const Character = React.memo(
             return;
         }
         
-        await generateCharacterProfile(false);
+        await generateCharacterProfiles(false);
         setTitle();
     }
 

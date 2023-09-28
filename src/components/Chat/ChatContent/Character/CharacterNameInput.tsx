@@ -4,6 +4,7 @@ import useStore from '@store/store';
 import { ChatInterface } from '@type/chat';
 import TickIcon from '@icon/TickIcon';
 import EditIcon from '@icon/EditIcon';
+import CrossIcon from '@icon/CrossIcon';
 
 const CharacterNameInput = ({
   value,
@@ -37,6 +38,12 @@ const CharacterNameInput = ({
 
     setIsEdit(false);
   }
+
+  const handleCancel = () => {
+    if (useStore.getState().generating) return;
+    _setContent(value);
+    setIsEdit(false);
+  }
   
   useEffect(() => {
     if (value.length == 0) {
@@ -68,6 +75,11 @@ const CharacterNameInput = ({
       {isEdit && <button className='btn relative btn-primary w-8 h-8 p-2 ml-2'
         onClick={handleSave}>
         <TickIcon />
+      </button>}
+      {isEdit && <button className='btn relative btn-danger w-8 h-8 p-2 ml-2'
+        onClick={handleCancel}
+      >
+        <CrossIcon />
       </button>}
     </div>
   );

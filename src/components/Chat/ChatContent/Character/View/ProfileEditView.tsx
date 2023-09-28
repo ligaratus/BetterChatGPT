@@ -9,6 +9,8 @@ import { ChatInterface } from '@type/chat';
 
 import PopupModal from '@components/PopupModal';
 import { CharacterProfile } from '@type/character';
+import useCharacterGeneration from '@hooks/useCharacterGeneration';
+import CrossIcon from '@icon/CrossIcon';
 
 const ProfileEditView = ({
     type,
@@ -28,6 +30,7 @@ const ProfileEditView = ({
   const [_content, _setContent] = useState<string>(content);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const textareaRef = React.createRef<HTMLTextAreaElement>();
+  const { generateCharacterProfile } = useCharacterGeneration();
 
   const { t } = useTranslation();
 
@@ -94,9 +97,18 @@ const ProfileEditView = ({
     setChats(updatedChats);
   };
 
-//   const { handleSubmit } = useSubmit();
-  const handleGenerate = () => {
+  const handleCancel = () => {
     if (useStore.getState().generating) return;
+    _setContent(content);
+    setIsEdit(false);
+  };
+
+//   const { handleSubmit } = useSubmit();
+  const handleGenerate = async () => {
+    if (useStore.getState().generating) return;
+    const profile = await generateCharacterProfile(type);
+    _setContent(profile);
+
     // const updatedChats: ChatInterface[] = JSON.parse(
     //   JSON.stringify(useStore.getState().chats)
     // );
@@ -134,7 +146,7 @@ const ProfileEditView = ({
     <>
       <div className='w-full flex'>
         <div
-          className={`w-full p-3 border border-grey-650 border rounded-md grey-650 text-sm dark:bg-gray-800 dark:text-gray-100`}
+          className={`w-full p-3 border border-grey-650 border rounded-md grey-650 dark:bg-gray-800 dark:text-gray-100`}
         >
           <textarea
             ref={textareaRef}
@@ -151,13 +163,22 @@ const ProfileEditView = ({
         
         {/* grow the flex so it matches the height of container */}
         <div className='ml-2 flex flex-col justify-between'>
-          <button className='btn relative btn-primary w-8 h-8 p-2'
-            onClick={handleSave}>
-            <TickIcon />
-          </button>
+          <div>
+            <button className='btn relative btn-primary w-8 h-8 p-2'
+              onClick={handleSave}>
+              <TickIcon />
+            </button>
+            <button
+              className='btn relative btn-danger w-8 h-8 p-2 mt-2'
+              aria-label='cancel'
+              onClick={handleCancel}
+            >
+              <CrossIcon />
+            </button>
+          </div>
 
           {canGenerate &&
-            <button className='btn relative btn-gray w-8 h-8 p-2'
+            <button className='btn relative btn-gray w-8 h-8 p-2 mt-4'
               onClick={handleGenerate}
             >
               <RefreshIcon />
